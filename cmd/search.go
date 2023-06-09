@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/inconshreveable/log15"
-	"github.com/kylechadha/rgn-app/client"
+	"github.com/opencamp-hq/core/client"
 	"github.com/spf13/cobra"
 )
 
