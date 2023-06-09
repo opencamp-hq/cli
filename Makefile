@@ -1,14 +1,18 @@
-.PHONY: build run build-linux build-darwin build-windows build-arm
+.PHONY: build install run build-linux build-darwin build-windows build-arm
 
 BUILD_DIR := ./build
 CLI_NAME := opencamp
+GOPATH := $(shell go env GOPATH)
 
 build:
 	@mkdir -p $(BUILD_DIR)
 	go build -o $(BUILD_DIR)/$(CLI_NAME) .
 
+install: build
+	cp $(BUILD_DIR)/$(CLI_NAME) $(GOPATH)/bin
+
 run: build
-	./$(BUILD_DIR)/$(CLI_NAME)
+	$(BUILD_DIR)/$(CLI_NAME)
 
 build-linux:
 	@mkdir -p $(BUILD_DIR)

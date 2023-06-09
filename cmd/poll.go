@@ -19,7 +19,7 @@ var pollCmd = &cobra.Command{
 	Use:   "poll [campground_id] [start_date (MM-DD-YYYY)] [end_date (MM-DD-YYYY)]",
 	Short: "Continuously polls campground availability",
 	Long: `Continously poll campground availability. You'll need to get the campground ID
-	by calling 'rgn search [campground]' first.
+	by calling 'opencamp search [campground]' first.
 	
 	Note that start_date and end_date should be in MM-DD-YYYY format.`,
 	Run: func(cmd *cobra.Command, args []string) {

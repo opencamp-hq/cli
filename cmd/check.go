@@ -17,7 +17,7 @@ var checkCmd = &cobra.Command{
 	Use:   "check [campground_id] [start_date (MM-DD-YYYY)] [end_date (MM-DD-YYYY)]",
 	Short: "Check campground availability",
 	Long: `Check campground availability. You'll need to get the campground ID
-by calling 'rgn search [campground]' first.
+by calling 'opencamp search [campground]' first.
 
 Note that start_date and end_date should be in MM-DD-YYYY format.`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -58,7 +58,7 @@ Note that start_date and end_date should be in MM-DD-YYYY format.`,
 		} else {
 			fmt.Println("The following sites are available for those dates:")
 			for _, s := range sites {
-				fmt.Printf(" - Site %-15s Book at: https://www.recreation.gov/camping/campsites/%s\n", s.Site, s.CampsiteID)
+				fmt.Printf(" - Site %-20s Book at: https://www.recreation.gov/camping/campsites/%s\n", s.Site, s.CampsiteID)
 			}
 		}
 	},
