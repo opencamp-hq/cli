@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/inconshreveable/log15"
@@ -32,6 +33,19 @@ var pollCmd = &cobra.Command{
 			l.SetHandler(log15.LvlFilterHandler(log15.LvlInfo, l.GetHandler()))
 		}
 
+		// Argument validation.
+		switch len(args) {
+		case 0:
+			l.Error("campground_id is a required argument")
+			return
+		case 1:
+			l.Error("start_date in MM-DD-YYYY format is a required argument")
+			return
+		case 2:
+			l.Error("end_date in MM-DD-YYYY format is a required argument")
+			return
+		}
+
 		campgroundID := args[0]
 		startDate := args[1]
 		endDate := args[2]
@@ -48,6 +62,7 @@ var pollCmd = &cobra.Command{
 			return
 		}
 
+		// Flag validation.
 		i, err := time.ParseDuration(interval)
 		if err != nil {
 			l.Error("Unable to parse interval", "err", err)
@@ -57,6 +72,18 @@ var pollCmd = &cobra.Command{
 		if i < time.Minute || i > 24*time.Hour {
 			l.Error("Polling interval is out of bounds. Choose a time between 1m and 24h")
 			return
+		}
+
+		if len(notify) > 0 {
+			switch strings.ToLower(notify) {
+			case "email":
+				err = setupEmail()
+				l.Warn("Unable to setup email notification", "err", err)
+			case "sms":
+			default:
+				l.Error("Unknown notification mechanism. Please specify 'email' or 'sms'")
+				return
+			}
 		}
 
 		c := client.New(l, 10*time.Second)
@@ -75,9 +102,11 @@ var pollCmd = &cobra.Command{
 }
 
 var interval string
+var notify string
 
 func init() {
 	rootCmd.AddCommand(pollCmd)
 
 	pollCmd.Flags().StringVar(&interval, "interval", "10m", "polling interval. Specify a time between 1m and 24h")
+	pollCmd.Flags().StringVar(&notify, "notify", "", "specify 'email' or 'text' if you would like to receive an email or text if availability is found")
 }
