@@ -31,8 +31,9 @@ not a park area or city.`,
 			l.SetHandler(log15.LvlFilterHandler(log15.LvlInfo, l.GetHandler()))
 		}
 
+		// Search campgrounds.
 		c := client.New(l, 10*time.Second)
-		campgrounds, err := c.Search(args[0])
+		campgrounds, err := c.Suggest(args[0])
 		if err != nil {
 			l.Error("Unable to retrieve campground info", "err", err)
 			return

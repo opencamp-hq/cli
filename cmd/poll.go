@@ -11,8 +11,9 @@ import (
 	"time"
 
 	"github.com/inconshreveable/log15"
-	"github.com/opencamp-hq/cli/email"
 	"github.com/opencamp-hq/core/client"
+	"github.com/opencamp-hq/core/models"
+	"github.com/opencamp-hq/core/notify"
 	"github.com/spf13/cobra"
 )
 
@@ -64,24 +65,29 @@ var pollCmd = &cobra.Command{
 		}
 
 		// Flag validation.
-		i, err := time.ParseDuration(interval)
+		interval, err := time.ParseDuration(intervalFlag)
 		if err != nil {
 			l.Error("Unable to parse interval", "err", err)
 			return
 		}
 
-		if i < time.Minute || i > 24*time.Hour {
+		if interval < time.Minute || interval > 24*time.Hour {
 			l.Error("Polling interval is out of bounds. Choose a time between 1m and 24h")
 			return
 		}
 
-		var e *email.SMTPSender
-		if len(notify) > 0 {
-			switch strings.ToLower(notify) {
+		var e *notify.SMTPSender
+		if len(notifyFlag) > 0 {
+			switch strings.ToLower(notifyFlag) {
 			case "email":
-				e, err = email.NewSMTPSender()
+				cfg, err := GetSMTPConfig()
 				if err != nil {
-					l.Warn("Unable to setup email notifier. Email notifications will not be sent", "err", err)
+					l.Warn("Unable to get SMTP config. Email notifications will not be sent", "err", err)
+				}
+
+				e, err = notify.NewSMTPSender(*cfg)
+				if err != nil {
+					l.Warn("Unable to setup SMTP sender. Email notifications will not be sent", "err", err)
 				}
 			case "sms":
 			default:
@@ -90,10 +96,10 @@ var pollCmd = &cobra.Command{
 			}
 		}
 
-		// Poll.
+		// Poll availability.
 		c := client.New(l, 10*time.Second)
 		ctx := context.Background()
-		sites, err := c.Poll(ctx, campgroundID, start, end, i)
+		sites, err := c.Poll(ctx, campgroundID, start, end, interval)
 		if err != nil {
 			l.Error("Encountered an error while polling", "err", err)
 			return
@@ -105,17 +111,25 @@ var pollCmd = &cobra.Command{
 			fmt.Printf(" - Site %-15s Book at: https://www.recreation.gov/camping/campsites/%s\n", s.Site, s.CampsiteID)
 		}
 
-		// cg, err := c.Campground(campgroundID)
-		e.Send(cg, start, end, sites)
+		cg, err := c.SearchByID(campgroundID)
+		if err != nil {
+			cg = &models.Campground{EntityID: campgroundID}
+			l.Warn("Unable to pull campground data for rich email formatting", "err", err)
+		}
+		err = e.Send(cg, startDate, endDate, sites)
+		if err != nil {
+			l.Error("Unable to send email", "err", err)
+			return
+		}
 	},
 }
 
-var interval string
-var notify string
+var intervalFlag string
+var notifyFlag string
 
 func init() {
 	rootCmd.AddCommand(pollCmd)
 
-	pollCmd.Flags().StringVar(&interval, "interval", "10m", "polling interval. Specify a time between 1m and 24h")
-	pollCmd.Flags().StringVar(&notify, "notify", "", "specify 'email' or 'text' if you would like to receive an email or text if availability is found")
+	pollCmd.Flags().StringVar(&intervalFlag, "interval", "10m", "polling interval. Specify a time between 1m and 24h")
+	pollCmd.Flags().StringVar(&notifyFlag, "notify", "", "specify 'email' or 'text' if you would like to receive an email or text if availability is found")
 }

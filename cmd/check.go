@@ -30,6 +30,19 @@ Note that start_date and end_date should be in MM-DD-YYYY format.`,
 			l.SetHandler(log15.LvlFilterHandler(log15.LvlInfo, l.GetHandler()))
 		}
 
+		// Argument validation.
+		switch len(args) {
+		case 0:
+			l.Error("campground_id is a required argument")
+			return
+		case 1:
+			l.Error("start_date in MM-DD-YYYY format is a required argument")
+			return
+		case 2:
+			l.Error("end_date in MM-DD-YYYY format is a required argument")
+			return
+		}
+
 		campgroundID := args[0]
 		startDate := args[1]
 		endDate := args[2]
@@ -46,6 +59,7 @@ Note that start_date and end_date should be in MM-DD-YYYY format.`,
 			return
 		}
 
+		// Check availability.
 		c := client.New(l, 10*time.Second)
 		sites, err := c.Availability(campgroundID, start, end)
 		if err != nil {
