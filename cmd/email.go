@@ -14,7 +14,7 @@ import (
 
 func GetSMTPConfig() (*notify.SMTPConfig, error) {
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("In order to get notified by email, please specify your email SMTP details")
+	fmt.Print("In order to get notified by email, please specify your email SMTP details\n")
 
 	fmt.Print("SMTP Server: ")
 	host, err := reader.ReadString('\n')
@@ -40,6 +40,7 @@ func GetSMTPConfig() (*notify.SMTPConfig, error) {
 		return nil, errors.New("Unable to read password")
 	}
 	password := string(bytePassword)
+	fmt.Print("\n\n")
 
 	return &notify.SMTPConfig{
 		Host:     strings.TrimSuffix(host, "\n"),

@@ -11,7 +11,12 @@ Simple CLI for interacting with the recreation.gov API.
 
 ## Usage
 
-### Search for a campground Id
+- [Search for a campground](#search-for-a-campground)
+- [Check campground availability](#check-campground-availability)
+- [Poll campground availability](#poll-campground-availability)
+- [Poll campground availability with email notification](#poll-campground-availability-with-email-notification)
+
+### Search for a campground
 ```
 ➜ opencamp search "kirk creek"
 - Kirk Creek Campground      Big Sur, California        ID: 233116
@@ -30,8 +35,35 @@ Sorry we didn't find any available campsites!
 ```
 ➜ opencamp poll 233116 09-11-2023 09-12-2023 --interval=1m
 INFO[06-09|14:24:37] No sites available atm, starting polling! interval=1m0s
-INFO[06-09|14:25:37] Sorry, no available campsites were found for your dates. We'll try again in 1m0s 
+INFO[06-09|14:25:37] Sorry, no available campsites were found for your dates. We'll try again
 ```
+
+### Poll campground availability, with email notification
+
+_Note: SMTP credentials are stored in memory and never echoed to stdout, however you should still be conscious of the security implications of authenticating with an SMTP server like this._
+
+```
+➜ opencamp poll 233116 09-11-2023 09-12-2023 --interval=1m --notify=email
+In order to get notified by email, please specify your email SMTP details
+SMTP Server: smtp.gmail.com
+SMTP Port: 587
+Email address: your-email@gmail.com
+Password: *************
+
+INFO[06-09|14:24:37] No sites available at the moment, starting polling! interval=1m0s
+INFO[06-09|14:25:37] Sorry, no available campsites were found for your dates. We'll try again...
+...
+INFO[06-11|18:14:37] Sorry, no available campsites were found for your dates. We'll try again...
+
+Just in! The following sites are now available for those dates:
+ - Site 004             Book at: https://www.recreation.gov/camping/campsites/70286
+ - Site 005             Book at: https://www.recreation.gov/camping/campsites/70079
+
+INFO[06-11|18:14:43] Notification email sent
+```
+
+#### Using Gmail as your SMTP server
+If you want to use Gmail as your smtp server and you have two factor authentication enabled, you'll need to generate an app password here: https://myaccount.google.com/apppasswords.
 
 ## License
 

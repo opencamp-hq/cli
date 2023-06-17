@@ -89,7 +89,9 @@ var pollCmd = &cobra.Command{
 				if err != nil {
 					l.Warn("Unable to setup SMTP sender. Email notifications will not be sent", "err", err)
 				}
+
 			case "sms":
+
 			default:
 				l.Error("Unknown notification mechanism. Please specify 'email' or 'sms'")
 				return
@@ -106,20 +108,30 @@ var pollCmd = &cobra.Command{
 		}
 
 		// Notify the user.
-		fmt.Println("The following sites are available for those dates:")
+		fmt.Println("Just in! The following sites are now available for those dates:")
 		for _, s := range sites {
 			fmt.Printf(" - Site %-15s Book at: https://www.recreation.gov/camping/campsites/%s\n", s.Site, s.CampsiteID)
 		}
+		fmt.Print("\n")
 
 		cg, err := c.SearchByID(campgroundID)
 		if err != nil {
 			cg = &models.Campground{EntityID: campgroundID}
-			l.Warn("Unable to pull campground data for rich email formatting", "err", err)
+			l.Warn("Unable to pull campground data for rich notifications", "err", err)
 		}
-		err = e.Send(cg, startDate, endDate, sites)
-		if err != nil {
-			l.Error("Unable to send email", "err", err)
-			return
+
+		if len(notifyFlag) > 0 {
+			switch strings.ToLower(notifyFlag) {
+			case "email":
+				err = e.Send(cg, startDate, endDate, sites)
+				if err != nil {
+					l.Error("Unable to send email", "err", err)
+					return
+				}
+				l.Info("Notification email sent")
+
+			case "sms":
+			}
 		}
 	},
 }
