@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/inconshreveable/log15"
+	"github.com/opencamp-hq/cli/email"
 	"github.com/opencamp-hq/core/client"
 	"github.com/spf13/cobra"
 )
@@ -74,11 +75,14 @@ var pollCmd = &cobra.Command{
 			return
 		}
 
+		var e *email.SMTPSender
 		if len(notify) > 0 {
 			switch strings.ToLower(notify) {
 			case "email":
-				err = setupEmail()
-				l.Warn("Unable to setup email notification", "err", err)
+				e, err = email.NewSMTPSender()
+				if err != nil {
+					l.Warn("Unable to setup email notifier. Email notifications will not be sent", "err", err)
+				}
 			case "sms":
 			default:
 				l.Error("Unknown notification mechanism. Please specify 'email' or 'sms'")
@@ -86,6 +90,7 @@ var pollCmd = &cobra.Command{
 			}
 		}
 
+		// Poll.
 		c := client.New(l, 10*time.Second)
 		ctx := context.Background()
 		sites, err := c.Poll(ctx, campgroundID, start, end, i)
@@ -94,10 +99,14 @@ var pollCmd = &cobra.Command{
 			return
 		}
 
+		// Notify the user.
 		fmt.Println("The following sites are available for those dates:")
 		for _, s := range sites {
 			fmt.Printf(" - Site %-15s Book at: https://www.recreation.gov/camping/campsites/%s\n", s.Site, s.CampsiteID)
 		}
+
+		// cg, err := c.Campground(campgroundID)
+		e.Send(cg, start, end, sites)
 	},
 }
 
