@@ -11,17 +11,16 @@ Simple CLI for interacting with the recreation.gov API.
 
 Includes polling and notifications, so you can get notified if a fully booked campground has a cancelation for the dates you're interested in. Run locally or deploy to Render.
 
-## Usage
+- [Usage](#usage)
+  - [Search for a campground](#search-for-a-campground)
+  - [Check campground availability](#check-campground-availability)
+  - [Poll campground availability](#poll-campground-availability)
+  - [Polling with email notifications](#polling-with-email-notifications)
+    - [Using Gmail as your SMTP server](#using-gmail-as-your-smtp-server)
+- [One-Click Deployment](#one-click-deployment)
+- [License](#license)
 
-- [OpenCamp CLI](#opencamp-cli)
-  - [Usage](#usage)
-    - [Search for a campground](#search-for-a-campground)
-    - [Check campground availability](#check-campground-availability)
-    - [Poll campground availability](#poll-campground-availability)
-    - [Poll campground availability, with email notification](#poll-campground-availability-with-email-notification)
-      - [Using Gmail as your SMTP server](#using-gmail-as-your-smtp-server)
-  - [One-Click Deployment](#one-click-deployment)
-  - [License](#license)
+## Usage
 
 ### Search for a campground
 ```
@@ -52,7 +51,7 @@ INFO[06-09|14:26:37] Sorry, no available campsites were found for your dates. We
 ...
 ```
 
-### Poll campground availability, with email notification
+### Polling with email notifications
 
 ```
 ➜ opencamp poll 233116 09-11-2023 09-12-2023 --interval=1m --notify=email
