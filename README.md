@@ -9,12 +9,19 @@
 
 Simple CLI for interacting with the recreation.gov API.
 
+Includes polling and notifications, so you can get notified if a fully booked campground has a cancelation for the dates you're interested in. Run locally or deploy to Render.
+
 ## Usage
 
-- [Search for a campground](#search-for-a-campground)
-- [Check campground availability](#check-campground-availability)
-- [Poll campground availability](#poll-campground-availability)
-- [Poll campground availability with email notification](#poll-campground-availability-with-email-notification)
+- [OpenCamp CLI](#opencamp-cli)
+  - [Usage](#usage)
+    - [Search for a campground](#search-for-a-campground)
+    - [Check campground availability](#check-campground-availability)
+    - [Poll campground availability](#poll-campground-availability)
+    - [Poll campground availability, with email notification](#poll-campground-availability-with-email-notification)
+      - [Using Gmail as your SMTP server](#using-gmail-as-your-smtp-server)
+  - [One-Click Deployment](#one-click-deployment)
+  - [License](#license)
 
 ### Search for a campground
 ```
@@ -28,7 +35,12 @@ Simple CLI for interacting with the recreation.gov API.
 ### Check campground availability
 ```
 ➜ opencamp check 233116 09-11-2023 09-12-2023
-Sorry we didn't find any available campsites!
+The following sites are available for those dates:
+ - Site 004                  Book at: https://www.recreation.gov/camping/campsites/70286
+ - Site 007                  Book at: https://www.recreation.gov/camping/campsites/70079
+ - Site 008                  Book at: https://www.recreation.gov/camping/campsites/70163
+ - Site 014                  Book at: https://www.recreation.gov/camping/campsites/70857
+ - Site 018                  Book at: https://www.recreation.gov/camping/campsites/70573
 ```
 
 ### Poll campground availability
@@ -36,11 +48,11 @@ Sorry we didn't find any available campsites!
 ➜ opencamp poll 233116 09-11-2023 09-12-2023 --interval=1m
 INFO[06-09|14:24:37] No sites available atm, starting polling! interval=1m0s
 INFO[06-09|14:25:37] Sorry, no available campsites were found for your dates. We'll try again
+INFO[06-09|14:26:37] Sorry, no available campsites were found for your dates. We'll try again
+...
 ```
 
 ### Poll campground availability, with email notification
-
-_Note: SMTP credentials are stored in memory and never echoed to stdout, however you should still be conscious of the security implications of authenticating with an SMTP server like this._
 
 ```
 ➜ opencamp poll 233116 09-11-2023 09-12-2023 --interval=1m --notify=email
@@ -62,8 +74,17 @@ Just in! The following sites are now available for those dates:
 INFO[06-11|18:14:43] Notification email sent
 ```
 
+_Note: SMTP credentials are stored in memory and never echoed to stdout, but you should still be conscious of the security implications of authenticating with an SMTP server like this._
+
 #### Using Gmail as your SMTP server
 If you want to use Gmail as your smtp server and you have two factor authentication enabled, you'll need to generate an app password here: https://myaccount.google.com/apppasswords.
+
+## One-Click Deployment
+
+You can run the CLI as a daemon but if you don't have a machine that runs 24/7 [Render](https://render.com) has one-click deployment functionality that is similar to Heroku and has free tier. Please be mindful of polling too frequently though, once every 10 minutes is the recommended max.
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/opencamp-hq/cli)
+
 
 ## License
 

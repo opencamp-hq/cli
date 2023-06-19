@@ -1,0 +1,6 @@
+services:
+- type: web
+  name: opencamp-cli
+  env: static
+  buildCommand: make build-linux
+  startCommand: ./build/opencamp-linux-amd64 poll $CAMPGROUND_ID $START_DATE $END_DATE --notify=$NOTIFIER
