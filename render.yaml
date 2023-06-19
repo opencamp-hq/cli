@@ -1,7 +1,7 @@
 services:
 - type: worker
   name: opencamp-cli
-  runtime: static
+  runtime: go
   buildCommand: make build-linux
   startCommand: ./build/opencamp-linux-amd64 poll $CAMPGROUND_ID $START_DATE $END_DATE --notify=$NOTIFIER
   branch: main
