@@ -4,4 +4,12 @@ services:
   runtime: go
   buildCommand: make build-linux
   startCommand: ./build/opencamp-linux-amd64 poll $CAMPGROUND_ID $START_DATE $END_DATE --notify=$NOTIFIER
+  autoDeploy: false
   branch: main
+  # envVars:
+  #   - key: CAMPGROUND_ID
+  #     value: "233116"
+  #   - key: START_DATE
+  #     value: "09-11-2023"
+  #   - key: END_DATE
+  #     value: "09-13-2023"

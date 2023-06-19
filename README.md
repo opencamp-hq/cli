@@ -18,6 +18,8 @@ Includes polling and notifications, so you can get notified if a fully booked ca
   - [Polling with email notifications](#polling-with-email-notifications)
     - [Using Gmail as your SMTP server](#using-gmail-as-your-smtp-server)
 - [One-Click Deployment](#one-click-deployment)
+    - [⚠️ Warning ⚠️](#️-warning-️)
+  - [Steps](#steps)
 - [License](#license)
 
 ## Usage
@@ -80,7 +82,18 @@ If you want to use Gmail as your smtp server and you have two factor authenticat
 
 ## One-Click Deployment
 
-You can run the CLI as a daemon but if you don't have a machine that runs 24/7 [Render](https://render.com) has one-click deployment functionality that is similar to Heroku and has free tier. Please be mindful of polling too frequently though, once every 10 minutes is the recommended max.
+You can run the CLI as a daemon but if you don't have a machine that runs 24/7 [Render](https://render.com) has one-click deployment functionality that is similar to Heroku and has a generous free tier.
+
+#### ⚠️ Warning ⚠️
+Please be mindful of polling too frequently, once every 10 minutes is the recommended max. Running the tool at a higher frequency is unlikely to make a difference and risks recreation.gov authenticating their API and breaking this type of access for everyone.
+
+### Steps
+1. Click the Deploy to Render button below
+2. Sign up for Render. In order to deploy the CLI tool as a background worker, you'll need to enter a credit card
+3. You'll probably never go past the free tier, but just in case, go to the [billing page](https://dashboard.render.com/billing) and specify a maximum allowed monthly spend
+4. Go back to your [Dashboard](https://dashboard.render.com/), and select the worker
+5. Update the environment variables for the worker, specifying `$CAMPGROUND_ID`, `$END_DATE`, and `$START_DATE` in MM-DD-YYYY format
+6. Check the logs to ensure the service is successfully polling
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/opencamp-hq/cli)
 
