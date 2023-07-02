@@ -7,6 +7,9 @@
 # Build directory
 /build/
 
+# No longer commit config.yaml updates
+config.yaml
+
 # For Render deployment
 # !/build/opencamp-linux-amd64
 

@@ -4,7 +4,6 @@ Copyright © 2023 Kyle Chadha @kylechadha
 package cmd
 
 import (
-	"log"
 	"os"
 	"strings"
 
@@ -40,23 +39,34 @@ run continuously and check availability (eg) every 10 minutes until a campsite b
 available or today's date is passed the start_date.
 `,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		viper.SetConfigName("config")
-		viper.AddConfigPath(".")
-		if err := viper.ReadInConfig(); err != nil {
-			if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-				log.Fatalf("Unable to read config file: %s", err)
-			}
-		}
-
-		viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-		viper.AutomaticEnv()
-
+		// Configure Viper with flags.
 		cmd.Flags().VisitAll(func(f *pflag.Flag) {
 			// Remove dashes (if any are present) from the flag name.
 			configName := strings.ReplaceAll(f.Name, "-", "")
 			viper.BindPFlag(configName, f)
 		})
 
+		// Configure Viper with env vars.
+		viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+		viper.AutomaticEnv()
+
+		// Configure Viper with config file.
+		configFilepath := viper.GetString("config")
+		if configFilepath != "" {
+			viper.SetConfigFile(configFilepath)
+		} else {
+			viper.SetConfigName("config")
+			viper.AddConfigPath(".")
+		}
+
+		if err := viper.ReadInConfig(); err != nil {
+			if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+				l.Crit("Unable to read config file: %s", "err", err)
+				os.Exit(1)
+			}
+		}
+
+		// Configure logger.
 		l = log15.New()
 		l.SetHandler(log15.StreamHandler(os.Stdout, log15.TerminalFormat()))
 
@@ -88,5 +98,7 @@ var l log15.Logger
 
 func init() {
 	var verbose bool
+	var config string
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose logging output")
+	rootCmd.PersistentFlags().StringVarP(&config, "config", "c", "", "config file location")
 }

@@ -1,4 +1,3 @@
-help: false
 interval: 10m
 notify: email
 smtp:
