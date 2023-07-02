@@ -4,9 +4,14 @@ Copyright © 2023 Kyle Chadha @kylechadha
 package cmd
 
 import (
+	"log"
 	"os"
+	"strings"
 
+	"github.com/inconshreveable/log15"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -34,9 +39,40 @@ this with 'opencamp poll [id] [start_date] [end_date] --interval=10m.' The appli
 run continuously and check availability (eg) every 10 minutes until a campsite becomes
 available or today's date is passed the start_date.
 `,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		viper.SetConfigName("config")
+		viper.AddConfigPath(".")
+		if err := viper.ReadInConfig(); err != nil {
+			if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+				log.Fatalf("Unable to read config file: %s", err)
+			}
+		}
+
+		viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+		viper.AutomaticEnv()
+
+		cmd.Flags().VisitAll(func(f *pflag.Flag) {
+			// Remove dashes (if any are present) from the flag name.
+			configName := strings.ReplaceAll(f.Name, "-", "")
+			viper.BindPFlag(configName, f)
+		})
+
+		l = log15.New()
+		l.SetHandler(log15.StreamHandler(os.Stdout, log15.TerminalFormat()))
+
+		if viper.GetBool("verbose") {
+			l.SetHandler(log15.LvlFilterHandler(log15.LvlDebug, l.GetHandler()))
+
+			configMap := viper.AllSettings()
+			var config []interface{}
+			for k, v := range configMap {
+				config = append(config, k, v)
+			}
+			l.Debug("Running in debug mode", config...)
+		} else {
+			l.SetHandler(log15.LvlFilterHandler(log15.LvlInfo, l.GetHandler()))
+		}
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -48,8 +84,9 @@ func Execute() {
 	}
 }
 
-var verbose bool
+var l log15.Logger
 
 func init() {
+	var verbose bool
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose logging output")
 }

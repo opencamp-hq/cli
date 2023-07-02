@@ -1,0 +1,8 @@
+help: false
+interval: 10m
+notify: email
+smtp:
+    email: your-email@gmail.com
+    host: smtp.gmail.com
+    password: your-password
+    port: 587

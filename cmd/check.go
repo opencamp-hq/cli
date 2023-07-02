@@ -5,10 +5,8 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"time"
 
-	"github.com/inconshreveable/log15"
 	"github.com/opencamp-hq/core/client"
 	"github.com/spf13/cobra"
 )
@@ -21,15 +19,6 @@ by calling 'opencamp search [campground]' first.
 
 Note that start_date and end_date should be in MM-DD-YYYY format.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		l := log15.New()
-		l.SetHandler(log15.StreamHandler(os.Stdout, log15.TerminalFormat()))
-
-		if verbose {
-			l.SetHandler(log15.LvlFilterHandler(log15.LvlDebug, l.GetHandler()))
-		} else {
-			l.SetHandler(log15.LvlFilterHandler(log15.LvlInfo, l.GetHandler()))
-		}
-
 		// Argument validation.
 		switch len(args) {
 		case 0:

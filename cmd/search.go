@@ -6,12 +6,11 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"time"
 
-	"github.com/inconshreveable/log15"
 	"github.com/opencamp-hq/core/client"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var searchCmd = &cobra.Command{
@@ -22,15 +21,6 @@ var searchCmd = &cobra.Command{
 Note that for the time being you must search by the name of a campground,
 not a park area or city.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		l := log15.New()
-		l.SetHandler(log15.StreamHandler(os.Stdout, log15.TerminalFormat()))
-
-		if verbose {
-			l.SetHandler(log15.LvlFilterHandler(log15.LvlDebug, l.GetHandler()))
-		} else {
-			l.SetHandler(log15.LvlFilterHandler(log15.LvlInfo, l.GetHandler()))
-		}
-
 		// Search campgrounds.
 		c := client.New(l, 10*time.Second)
 		campgrounds, err := c.Suggest(args[0])
@@ -43,7 +33,7 @@ not a park area or city.`,
 			return
 		}
 
-		if jsonOutput {
+		if viper.GetBool("json") {
 			bytes, err := json.MarshalIndent(campgrounds, "", "  ")
 			if err != nil {
 				l.Error("Unable to print output as JSON", "err", err)
@@ -72,9 +62,9 @@ not a park area or city.`,
 	},
 }
 
-var jsonOutput bool
-
 func init() {
 	rootCmd.AddCommand(searchCmd)
-	searchCmd.Flags().BoolVar(&jsonOutput, "json", false, "output in JSON format")
+
+	var json bool
+	searchCmd.Flags().BoolVar(&json, "json", false, "output in JSON format")
 }

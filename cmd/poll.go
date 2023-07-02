@@ -6,15 +6,14 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 	"strings"
 	"time"
 
-	"github.com/inconshreveable/log15"
 	"github.com/opencamp-hq/core/client"
 	"github.com/opencamp-hq/core/models"
 	"github.com/opencamp-hq/core/notify"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // pollCmd represents the poll command
@@ -26,15 +25,6 @@ var pollCmd = &cobra.Command{
 	
 	Note that start_date and end_date should be in MM-DD-YYYY format.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		l := log15.New()
-		l.SetHandler(log15.StreamHandler(os.Stdout, log15.TerminalFormat()))
-
-		if verbose {
-			l.SetHandler(log15.LvlFilterHandler(log15.LvlDebug, l.GetHandler()))
-		} else {
-			l.SetHandler(log15.LvlFilterHandler(log15.LvlInfo, l.GetHandler()))
-		}
-
 		// Argument validation.
 		switch len(args) {
 		case 0:
@@ -65,6 +55,7 @@ var pollCmd = &cobra.Command{
 		}
 
 		// Flag validation.
+		intervalFlag := viper.GetString("interval")
 		interval, err := time.ParseDuration(intervalFlag)
 		if err != nil {
 			l.Error("Unable to parse interval", "err", err)
@@ -76,6 +67,7 @@ var pollCmd = &cobra.Command{
 			return
 		}
 
+		notifyFlag := viper.GetString("notify")
 		var e *notify.SMTPSender
 		if len(notifyFlag) > 0 {
 			switch strings.ToLower(notifyFlag) {
@@ -136,12 +128,11 @@ var pollCmd = &cobra.Command{
 	},
 }
 
-var intervalFlag string
-var notifyFlag string
-
 func init() {
 	rootCmd.AddCommand(pollCmd)
 
-	pollCmd.Flags().StringVar(&intervalFlag, "interval", "10m", "polling interval. Specify a time between 1m and 24h")
-	pollCmd.Flags().StringVar(&notifyFlag, "notify", "", "specify 'email' or 'text' if you would like to receive an email or text if availability is found")
+	var interval string
+	var notify string
+	pollCmd.Flags().StringVar(&interval, "interval", "10m", "polling interval. Specify a time between 1m and 24h")
+	pollCmd.Flags().StringVar(&notify, "notify", "", "specify 'email' or 'text' if you would like to receive an email or text if availability is found")
 }
