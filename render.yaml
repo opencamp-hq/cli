@@ -31,6 +31,6 @@ services:
     - key: SMTP_PASSWORD
       sync: false
       # value: "your-password"
-    - key: verbose
+    - key: VERBOSE
       sync: false
       # value: "true"
