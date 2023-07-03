@@ -4,6 +4,8 @@ Copyright © 2023 Kyle Chadha @kylechadha
 package cmd
 
 import (
+	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -91,16 +93,26 @@ credentials, ie: your smtp configuration or twilio API key for email and text, r
 	},
 }
 
+var versionCmd = &cobra.Command{
+	Use:   "version",
+	Short: "Prints build version",
+	Long:  "Prints build version",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Printf("opencamp version %s\n", version)
+	},
+}
+
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
-		os.Exit(1)
+		log.Fatal(err)
 	}
 }
 
 var l log15.Logger
+var version = "dev"
 
 func init() {
 	var verbose bool
@@ -110,4 +122,6 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose logging output")
 	rootCmd.PersistentFlags().StringVarP(&config, "config", "c", "", "config file location")
 	rootCmd.PersistentFlags().StringVarP(&notify, "notify", "n", "", "specify 'email' or 'text' if you would like to receive an email or text if availability is found")
+
+	rootCmd.AddCommand(versionCmd)
 }
