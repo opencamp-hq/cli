@@ -11,6 +11,7 @@ Simple CLI for interacting with the recreation.gov API.
 
 Includes polling and notifications, so you can get notified if a fully booked campground has a cancelation for the dates you're interested in. Run locally or deploy to Render.
 
+- [Installation](#installation)
 - [Usage](#usage)
   - [Search for a campground](#search-for-a-campground)
   - [Check campground availability](#check-campground-availability)
@@ -19,9 +20,22 @@ Includes polling and notifications, so you can get notified if a fully booked ca
     - [Using Gmail as your SMTP server](#using-gmail-as-your-smtp-server)
 - [Configuration](#configuration)
 - [One-Click Deployment](#one-click-deployment)
-    - [⚠️ Warning ⚠️](#️-warning-️)
+    - [Warning ⚠️](#warning-️)
   - [Steps](#steps)
 - [License](#license)
+
+## Installation
+
+**Option 1**: Install with Brew
+
+```
+brew tap opencamp-hq/homebrew-opencamp
+brew install opencamp
+```
+
+**Option 2**: Precompiled Binaries
+
+Precompiled binaries for the project can be found in the [Releases](https://github.com/opencamp-hq/cli/releases) section.
 
 ## Usage
 
@@ -55,9 +69,9 @@ INFO[06-09|14:44:37] Sorry, no available campsites were found for your dates. We
 ```
 
 ## Email Notifications
-Both the `check` and `poll` commands support notifications on campsite availability. Currently notifications via email are available, SMS is coming soon.
+Both the `check` and `poll` commands support email notifications when a campsite is found available.
 
-To get notified via email, you'll be prompted to supply your SMTP credentials interactively. Alternately, you can supply these credentials as environment variables (SMTP_HOST, SMTP_EMAIL, etc) or in a config.yaml to allow the tool to run non-interactively (ie: as a cron). See [Configuration](#configuration) for more info.
+To get notified via email, you'll be prompted to supply your SMTP credentials interactively. Alternately, you can supply these credentials as environment variables (SMTP_HOST, SMTP_EMAIL, etc) or in a config.yaml to allow the tool to run in a headless mode (ie: as a cron). See [Configuration](#configuration) for more info.
 
 ```
 ➜ opencamp poll 233116 09-11-2023 09-12-2023 --notify=email
@@ -104,19 +118,19 @@ For nested configuration, the equivalent env var is a concatenation of keys with
 
 ## One-Click Deployment
 
-You can run the CLI as a daemon but if you don't have a machine that runs 24/7 [Render](https://render.com) has one-click deployment functionality for cron jobs.
+You can run the CLI as a daemon but if you don't have a machine that runs 24/7 [Render](https://render.com) provides one-click deployment functionality similar to Heroku. Based on the settings defined in the [render.yaml](render.yaml) file, the CLI will be deployed as a cron job that runs once every 10m.
 
-#### ⚠️ Warning ⚠️
+#### Warning ⚠️
 Please be mindful of polling too frequently, once every 10 minutes is the recommended max. Running the tool at a higher frequency is unlikely to make a difference and risks recreation.gov authenticating their API and breaking this type of access for everyone.
 
 ### Steps
 1. Sign up for [Render](https://render.com). In order to deploy the CLI as a cron job, you'll need to enter a credit card, but the billing rate is $0.0094/hr
-   1. Note: The minimum for a cron job is $1/mo, which is probably what you'll end up spending
+   1. Note: The minimum for a cron job is $1/mo, which is what you'll probably end up spending
 2. Click the Deploy to Render button below
-3. Enter values for the environment variables. Example values for each environment variable are in the [render.yaml](render.yaml) file in this repository
+3. Enter values for the environment variables. Example values for each environment variable are in the [render.yaml](render.yaml) file
    1. Note: You'll need to determine the id of the campground you're interested in by running the tool locally first, ie: [Search for a campground](#search-for-a-campground)
 4. Check the logs to ensure the cronjob is successfully running
-5. If a campground is available, you'll get an e-mail with a link to book!
+5. If a campground is available, you'll get an e-mail with a link to book
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/opencamp-hq/cli)
 
