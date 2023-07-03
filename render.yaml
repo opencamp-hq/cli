@@ -9,26 +9,26 @@ services:
   branch: main
   envVars:
     - key: CAMPGROUND_ID
-      value: "233116"
       sync: false
+      # value: "233116"
     - key: START_DATE
-      value: "09-11-2023"
       sync: false
+      # value: "09-11-2023"
     - key: END_DATE
-      value: "09-13-2023"
       sync: false
+      # value: "09-13-2023"
     - key: NOTIFY
-      value: "email"
       sync: false
+      # value: "email"
     - key: SMTP_HOST
-      value: "smtp.gmail.com"
       sync: false
+      # value: "smtp.gmail.com"
     - key: SMTP_PORT
-      value: "587"
       sync: false
+      # value: "587"
     - key: SMTP_EMAIL
-      value: "your-email@gmail.com"
       sync: false
+      # value: "your-email@gmail.com"
     - key: SMTP_PASSWORD
-      value: "your-password"
       sync: false
+      # value: "your-password"
