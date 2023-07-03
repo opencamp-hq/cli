@@ -3,7 +3,6 @@ services:
   name: opencamp-cli
   runtime: go
   schedule: "0/10 * * * *"
-  # buildCommand: make build-linux
   startCommand: ./build/opencamp-linux-amd64 check $CAMPGROUND_ID $START_DATE $END_DATE
   autoDeploy: false
   branch: main
