@@ -1,7 +1,7 @@
 interval: 10m
 notify: email
 smtp:
-    email: your-email@gmail.com
     host: smtp.gmail.com
-    password: your-password
     port: 587
+    email: your-email@gmail.com
+    password: your-password # If you use gmail, you need to generate an app password here: https://myaccount.google.com/apppasswords

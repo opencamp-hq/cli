@@ -46,27 +46,27 @@ The following sites are available for those dates:
 
 ### Poll campground availability
 ```
-➜ opencamp poll 233116 09-11-2023 09-12-2023 --interval=1m
-INFO[06-09|14:24:37] No sites available atm, starting polling! interval=1m0s
-INFO[06-09|14:25:37] Sorry, no available campsites were found for your dates. We'll try again
-INFO[06-09|14:26:37] Sorry, no available campsites were found for your dates. We'll try again
+➜ opencamp poll 233116 09-11-2023 09-12-2023 --interval=10m
+INFO[06-09|14:24:37] No sites available atm, starting polling! interval=10m0s
+INFO[06-09|14:34:37] Sorry, no available campsites were found for your dates. We'll try again in 10m0s
+INFO[06-09|14:44:37] Sorry, no available campsites were found for your dates. We'll try again in 10m0s
 ...
 ```
 
 ### Polling with email notifications
 
 ```
-➜ opencamp poll 233116 09-11-2023 09-12-2023 --interval=1m --notify=email
+➜ opencamp poll 233116 09-11-2023 09-12-2023 --notify=email
 In order to get notified by email, please specify your email SMTP details
 SMTP Server: smtp.gmail.com
 SMTP Port: 587
 Email address: your-email@gmail.com
 Password: *************
 
-INFO[06-09|14:24:37] No sites available at the moment, starting polling! interval=1m0s
-INFO[06-09|14:25:37] Sorry, no available campsites were found for your dates. We'll try again...
+INFO[06-09|14:24:37] No sites available at the moment, starting polling! interval=10m0s
+INFO[06-09|14:34:37] Sorry, no available campsites were found for your dates. We'll try again in 10m0s
 ...
-INFO[06-11|18:14:37] Sorry, no available campsites were found for your dates. We'll try again...
+INFO[06-11|18:14:37] Sorry, no available campsites were found for your dates. We'll try again in 10m0s
 
 Just in! The following sites are now available for those dates:
  - Site 004             Book at: https://www.recreation.gov/camping/campsites/70286
@@ -82,7 +82,7 @@ If you want to use Gmail as your smtp server and you have two factor authenticat
 
 ## One-Click Deployment
 
-You can run the CLI as a daemon but if you don't have a machine that runs 24/7 [Render](https://render.com) has one-click deployment functionality that is similar to Heroku and has a generous free tier.
+You can run the CLI as a daemon but if you don't have a machine that runs 24/7 [Render](https://render.com) has one-click deployment functionality that is similar to Heroku.
 
 #### ⚠️ Warning ⚠️
 Please be mindful of polling too frequently, once every 10 minutes is the recommended max. Running the tool at a higher frequency is unlikely to make a difference and risks recreation.gov authenticating their API and breaking this type of access for everyone.

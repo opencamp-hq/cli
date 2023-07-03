@@ -5,10 +5,14 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/opencamp-hq/core/client"
+	"github.com/opencamp-hq/core/models"
+	"github.com/opencamp-hq/core/notify"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var checkCmd = &cobra.Command{
@@ -48,6 +52,30 @@ Note that start_date and end_date should be in MM-DD-YYYY format.`,
 			return
 		}
 
+		// Flag validation.
+		notifyFlag := viper.GetString("notify")
+		var e *notify.SMTPSender
+		if len(notifyFlag) > 0 {
+			switch strings.ToLower(notifyFlag) {
+			case "email":
+				cfg, err := GetSMTPConfig()
+				if err != nil {
+					l.Warn("Unable to get SMTP config. Email notifications will not be sent", "err", err)
+				}
+
+				e, err = notify.NewSMTPSender(*cfg)
+				if err != nil {
+					l.Warn("Unable to setup SMTP sender. Email notifications will not be sent", "err", err)
+				}
+
+			case "sms":
+
+			default:
+				l.Error("Unknown notification mechanism. Please specify 'email' or 'sms'")
+				return
+			}
+		}
+
 		// Check availability.
 		c := client.New(l, 10*time.Second)
 		sites, err := c.Availability(campgroundID, start, end)
@@ -58,10 +86,37 @@ Note that start_date and end_date should be in MM-DD-YYYY format.`,
 
 		if len(sites) == 0 {
 			fmt.Println("Sorry we didn't find any available campsites!")
-		} else {
-			fmt.Println("The following sites are available for those dates:")
-			for _, s := range sites {
-				fmt.Printf(" - Site %-20s Book at: https://www.recreation.gov/camping/campsites/%s\n", s.Site, s.CampsiteID)
+			return
+		}
+
+		// TODO: Refactor check and poll commands, 90% of the code is the same:
+		// - argument validation, flag validation, notification
+
+		// Notify the user.
+		fmt.Println("The following sites are available for those dates:")
+		for _, s := range sites {
+			fmt.Printf(" - Site %-20s Book at: https://www.recreation.gov/camping/campsites/%s\n", s.Site, s.CampsiteID)
+		}
+
+		fmt.Print("\n")
+
+		cg, err := c.SearchByID(campgroundID)
+		if err != nil {
+			cg = &models.Campground{EntityID: campgroundID}
+			l.Warn("Unable to pull campground data for rich notifications", "err", err)
+		}
+
+		if len(notifyFlag) > 0 {
+			switch strings.ToLower(notifyFlag) {
+			case "email":
+				err = e.Send(cg, startDate, endDate, sites)
+				if err != nil {
+					l.Error("Unable to send email", "err", err)
+					return
+				}
+				l.Info("Notification email sent")
+
+			case "sms":
 			}
 		}
 	},

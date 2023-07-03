@@ -16,7 +16,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-// pollCmd represents the poll command
 var pollCmd = &cobra.Command{
 	Use:   "poll [campground_id] [start_date (MM-DD-YYYY)] [end_date (MM-DD-YYYY)]",
 	Short: "Continuously polls campground availability",
@@ -102,7 +101,7 @@ var pollCmd = &cobra.Command{
 		// Notify the user.
 		fmt.Println("Just in! The following sites are now available for those dates:")
 		for _, s := range sites {
-			fmt.Printf(" - Site %-15s Book at: https://www.recreation.gov/camping/campsites/%s\n", s.Site, s.CampsiteID)
+			fmt.Printf(" - Site %-20s Book at: https://www.recreation.gov/camping/campsites/%s\n", s.Site, s.CampsiteID)
 		}
 		fmt.Print("\n")
 
@@ -132,7 +131,5 @@ func init() {
 	rootCmd.AddCommand(pollCmd)
 
 	var interval string
-	var notify string
 	pollCmd.Flags().StringVar(&interval, "interval", "10m", "polling interval. Specify a time between 1m and 24h")
-	pollCmd.Flags().StringVar(&notify, "notify", "", "specify 'email' or 'text' if you would like to receive an email or text if availability is found")
 }

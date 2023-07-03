@@ -13,7 +13,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// rootCmd represents the base command when called without any subcommands
+// rootCmd represents the base command when called without any subcommands.
 var rootCmd = &cobra.Command{
 	Use:   "opencamp",
 	Short: "Determine recreation.gov campground availability",
@@ -37,6 +37,10 @@ Finally, you can continuously poll availability to see if any cancelations occur
 this with 'opencamp poll [id] [start_date] [end_date] --interval=10m.' The application will
 run continuously and check availability (eg) every 10 minutes until a campsite becomes
 available or today's date is passed the start_date.
+
+Both the check and poll commands accept a --notify flag which can be set to email or
+(in the future) text. Please note you will be required to set your notification platform's
+credentials, ie: your smtp configuration or twilio API key for email and text, respectively.
 `,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		// Configure Viper with flags.
@@ -99,6 +103,9 @@ var l log15.Logger
 func init() {
 	var verbose bool
 	var config string
+	var notify string
+
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose logging output")
 	rootCmd.PersistentFlags().StringVarP(&config, "config", "c", "", "config file location")
+	rootCmd.PersistentFlags().StringVarP(&notify, "notify", "n", "", "specify 'email' or 'text' if you would like to receive an email or text if availability is found")
 }
