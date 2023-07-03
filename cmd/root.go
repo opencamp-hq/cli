@@ -80,6 +80,8 @@ credentials, ie: your smtp configuration or twilio API key for email and text, r
 			configMap := viper.AllSettings()
 			var config []interface{}
 			for k, v := range configMap {
+				// TODO: If we wanted to redact the password here, we'd need to recursively
+				// process v in the case where it's a map or other nestable data structure.
 				config = append(config, k, v)
 			}
 			l.Debug("Running in debug mode", config...)

@@ -1,25 +1,34 @@
 services:
-- type: worker
+- type: cron
   name: opencamp-cli
   runtime: go
-  buildCommand: make build-linux
-  startCommand: ./build/opencamp-linux-amd64 poll $CAMPGROUND_ID $START_DATE $END_DATE --notify=$NOTIFIER
+  schedule: "0/10 * * * *"
+  # buildCommand: make build-linux
+  startCommand: ./build/opencamp-linux-amd64 check $CAMPGROUND_ID $START_DATE $END_DATE
   autoDeploy: false
   branch: main
-  # envVars:
-  #   - key: CAMPGROUND_ID
-  #     value: "233116"
-  #   - key: START_DATE
-  #     value: "09-11-2023"
-  #   - key: END_DATE
-  #     value: "09-13-2023"
-  #   - key: NOTIFY
-  #     value: "email"
-  #   - key: SMTP_HOST
-  #     value: "smtp.gmail.com"
-  #   - key: SMTP_PORT
-  #     value: "587"
-  #   - key: SMTP_EMAIL
-  #     value: "your-email@gmail.com"
-  #   - key: SMTP_PASSWORD
-  #     value: "your-password"
+  envVars:
+    - key: CAMPGROUND_ID
+      value: "233116"
+      sync: false
+    - key: START_DATE
+      value: "09-11-2023"
+      sync: false
+    - key: END_DATE
+      value: "09-13-2023"
+      sync: false
+    - key: NOTIFY
+      value: "email"
+      sync: false
+    - key: SMTP_HOST
+      value: "smtp.gmail.com"
+      sync: false
+    - key: SMTP_PORT
+      value: "587"
+      sync: false
+    - key: SMTP_EMAIL
+      value: "your-email@gmail.com"
+      sync: false
+    - key: SMTP_PASSWORD
+      value: "your-password"
+      sync: false

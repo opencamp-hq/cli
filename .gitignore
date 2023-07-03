@@ -5,10 +5,10 @@
 *.out
 
 # Build directory
-/build/
+/build/*
 
 # For Render deployment
-# !/build/opencamp-linux-amd64
+!/build/opencamp-linux-amd64
 
 # dependencies
 /node_modules
