@@ -1,4 +1,4 @@
-.PHONY: build install run build-linux build-darwin build-windows build-arm
+.PHONY: build install run build-linux build-darwin build-darwin-arm64 build-windows build-arm
 
 BUILD_DIR := ./build
 CLI_NAME := opencamp
@@ -24,6 +24,10 @@ build-darwin:
 	@mkdir -p $(BUILD_DIR)
 	GOOS=darwin GOARCH=amd64 go build -ldflags "-X $(REPO)/cmd.version=$(VERSION)" -o $(BUILD_DIR)/$(CLI_NAME)-darwin-amd64 .
 
+build-darwin-arm64:
+	@mkdir -p $(BUILD_DIR)
+	GOOS=darwin GOARCH=arm64 go build -ldflags "-X $(REPO)/cmd.version=$(VERSION)" -o $(BUILD_DIR)/$(CLI_NAME)-darwin-arm64 .
+
 build-windows:
 	@mkdir -p $(BUILD_DIR)
 	GOOS=windows GOARCH=amd64 go build -ldflags "-X $(REPO)/cmd.version=$(VERSION)" -o $(BUILD_DIR)/$(CLI_NAME)-windows-amd64.exe .
@@ -32,4 +36,4 @@ build-arm:
 	@mkdir -p $(BUILD_DIR)
 	GOOS=linux GOARCH=arm64 go build -ldflags "-X $(REPO)/cmd.version=$(VERSION)" -o $(BUILD_DIR)/$(CLI_NAME)-linux-arm64 .
 
-release: build-linux build-darwin build-windows build-arm
+release: build-linux build-darwin build-darwin-arm64 build-windows build-arm
