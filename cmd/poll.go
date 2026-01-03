@@ -114,7 +114,8 @@ var pollCmd = &cobra.Command{
 		if len(notifyFlag) > 0 {
 			switch strings.ToLower(notifyFlag) {
 			case "email":
-				err = e.Send(cg, startDate, endDate, sites)
+				cfg, _ := GetSMTPConfig()
+				err = e.Send(cfg.Email, cg, startDate, endDate, sites)
 				if err != nil {
 					l.Error("Unable to send email", "err", err)
 					return
