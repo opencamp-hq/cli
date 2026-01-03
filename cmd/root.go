@@ -6,10 +6,10 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"log/slog"
 	"os"
 	"strings"
 
-	"github.com/inconshreveable/log15"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -67,28 +67,28 @@ credentials, ie: your smtp configuration or twilio API key for email and text, r
 
 		if err := viper.ReadInConfig(); err != nil {
 			if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-				l.Crit("Unable to read config file: %s", "err", err)
-				os.Exit(1)
+				log.Fatalf("Unable to read config file: %v", err)
 			}
 		}
 
 		// Configure logger.
-		l = log15.New()
-		l.SetHandler(log15.StreamHandler(os.Stdout, log15.TerminalFormat()))
+		var level slog.Level
+		if viper.GetBool("verbose") {
+			level = slog.LevelDebug
+		} else {
+			level = slog.LevelInfo
+		}
+		l = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: level}))
 
 		if viper.GetBool("verbose") {
-			l.SetHandler(log15.LvlFilterHandler(log15.LvlDebug, l.GetHandler()))
-
 			configMap := viper.AllSettings()
-			var config []interface{}
+			var config []any
 			for k, v := range configMap {
 				// TODO: If we wanted to redact the password here, we'd need to recursively
 				// process v in the case where it's a map or other nestable data structure.
 				config = append(config, k, v)
 			}
 			l.Debug("Running in debug mode", config...)
-		} else {
-			l.SetHandler(log15.LvlFilterHandler(log15.LvlInfo, l.GetHandler()))
 		}
 	},
 }
@@ -111,7 +111,7 @@ func Execute() {
 	}
 }
 
-var l log15.Logger
+var l *slog.Logger
 var version = "dev"
 
 func init() {
