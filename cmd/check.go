@@ -55,15 +55,17 @@ Note that start_date and end_date should be in MM-DD-YYYY format.`,
 		// Flag validation.
 		notifyFlag := viper.GetString("notify")
 		var e *notify.SMTPSender
+		var smtpCfg *notify.SMTPConfig
 		if len(notifyFlag) > 0 {
 			switch strings.ToLower(notifyFlag) {
 			case "email":
-				cfg, err := GetSMTPConfig()
+				var err error
+				smtpCfg, err = GetSMTPConfig()
 				if err != nil {
 					l.Warn("Unable to get SMTP config. Email notifications will not be sent", "err", err)
 				}
 
-				e, err = notify.NewSMTPSender(*cfg)
+				e, err = notify.NewSMTPSender(*smtpCfg)
 				if err != nil {
 					l.Warn("Unable to setup SMTP sender. Email notifications will not be sent", "err", err)
 				}
@@ -106,11 +108,10 @@ Note that start_date and end_date should be in MM-DD-YYYY format.`,
 			l.Warn("Unable to pull campground data for rich notifications", "err", err)
 		}
 
-		if len(notifyFlag) > 0 {
+		if len(notifyFlag) > 0 && e != nil {
 			switch strings.ToLower(notifyFlag) {
 			case "email":
-				cfg, _ := GetSMTPConfig()
-				err = e.Send(cfg.Email, cg, startDate, endDate, sites)
+				err = e.Send(smtpCfg.Email, cg, startDate, endDate, sites)
 				if err != nil {
 					l.Error("Unable to send email", "err", err)
 					return

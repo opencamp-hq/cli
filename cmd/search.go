@@ -21,6 +21,11 @@ var searchCmd = &cobra.Command{
 Note that for the time being you must search by the name of a campground,
 not a park area or city.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) == 0 {
+			l.Error("campground name is a required argument")
+			return
+		}
+
 		// Search campgrounds.
 		c := client.New(l, 10*time.Second)
 		campgrounds, err := c.Suggest(args[0])
