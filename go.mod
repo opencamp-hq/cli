@@ -3,7 +3,7 @@ module github.com/opencamp-hq/cli
 go 1.24
 
 require (
-	github.com/opencamp-hq/core v0.3.0
+	github.com/opencamp-hq/core v0.3.1
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.16.0
