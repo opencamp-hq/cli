@@ -9,7 +9,7 @@ import (
 
 	"github.com/opencamp-hq/core/notify"
 	"github.com/spf13/viper"
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 )
 
 func GetSMTPConfig() (*notify.SMTPConfig, error) {
@@ -46,7 +46,7 @@ func GetSMTPConfig() (*notify.SMTPConfig, error) {
 	}
 
 	fmt.Print("Password: ")
-	bytePassword, err := terminal.ReadPassword(int(syscall.Stdin))
+	bytePassword, err := term.ReadPassword(int(syscall.Stdin))
 	if err != nil {
 		return nil, errors.New("Unable to read password")
 	}
